@@ -134,8 +134,8 @@
 #define HEATER_1_PIN                        PB0   // HEATER2
 #define HEATER_BED_PIN                      PA0   // HOT BED
 
-#define FAN0_PIN                            PC14  // FAN
-#define FAN1_PIN                            PB1   // FAN1
+#define FAN0_PIN                            PB1  // FAN
+#define FAN1_PIN                            PB0   // FAN1
 
 //
 // Thermocouples
@@ -245,23 +245,23 @@
  *                ------                                     ------
  *                 EXP1                                       EXP2
  */
-#define EXP1_01_PIN                         PC5
-#define EXP1_02_PIN                         PE13
-#define EXP1_03_PIN                         PD13
-#define EXP1_04_PIN                         PC6
-#define EXP1_05_PIN                         PE14
-#define EXP1_06_PIN                         PE15
-#define EXP1_07_PIN                         PD11
-#define EXP1_08_PIN                         PD10
+#define EXP1_03_PIN                         PD10
+#define EXP1_04_PIN                         PD11
+#define EXP1_05_PIN                         PE15
+#define EXP1_06_PIN                         PE14
+#define EXP1_07_PIN                         PC6
+#define EXP1_08_PIN                         PD13
+#define EXP1_09_PIN                         PE13
+#define EXP1_10_PIN                         PC5
 
-#define EXP2_01_PIN                         PA6
-#define EXP2_02_PIN                         PA5
-#define EXP2_03_PIN                         PE8
-#define EXP2_04_PIN                         PE10
-#define EXP2_05_PIN                         PE11
-#define EXP2_06_PIN                         PA7
-#define EXP2_07_PIN                         PE12
-#define EXP2_08_PIN                         -1    // RESET
+#define EXP2_03_PIN                         -1    // RESET
+#define EXP2_04_PIN                         PE12
+#define EXP2_05_PIN                         PA7
+#define EXP2_06_PIN                         PE11
+#define EXP2_07_PIN                         PE10
+#define EXP2_08_PIN                         PE8
+#define EXP2_09_PIN                         PA5
+#define EXP2_10_PIN                         PA6
 
 //
 // SPI SD Card
@@ -280,17 +280,17 @@
 //
 
 #if ANY(TFT_COLOR_UI, TFT_LVGL_UI, TFT_CLASSIC_UI)
-  #define TFT_CS_PIN                 EXP1_07_PIN
-  #define TFT_SCK_PIN                EXP2_02_PIN
-  #define TFT_MISO_PIN               EXP2_01_PIN
-  #define TFT_MOSI_PIN               EXP2_06_PIN
-  #define TFT_DC_PIN                 EXP1_08_PIN
+  #define TFT_CS_PIN                 EXP1_04_PIN
+  #define TFT_SCK_PIN                EXP2_09_PIN
+  #define TFT_MISO_PIN               EXP2_10_PIN
+  #define TFT_MOSI_PIN               EXP2_05_PIN
+  #define TFT_DC_PIN                 EXP1_03_PIN
   #define TFT_A0_PIN                  TFT_DC_PIN
 
-  #define TFT_RESET_PIN              EXP1_04_PIN
+  #define TFT_RESET_PIN              EXP1_07_PIN
 
   #define LCD_BACKLIGHT_PIN          EXP1_03_PIN
-  #define TFT_BACKLIGHT_PIN    LCD_BACKLIGHT_PIN
+  #define TFT_BACKLIGHT_PIN          EXP1_08_PIN
 
   #define TOUCH_BUTTONS_HW_SPI
   #define TOUCH_BUTTONS_HW_SPI_DEVICE          1
@@ -302,15 +302,15 @@
     #define TFT_HEIGHT                       320
   #endif
 
-  #define TOUCH_CS_PIN               EXP1_05_PIN  // SPI1_NSS
-  #define TOUCH_SCK_PIN              EXP2_02_PIN  // SPI1_SCK
-  #define TOUCH_MISO_PIN             EXP2_01_PIN  // SPI1_MISO
-  #define TOUCH_MOSI_PIN             EXP2_06_PIN  // SPI1_MOSI
+  #define TOUCH_CS_PIN               EXP1_06_PIN  // SPI1_NSS
+  #define TOUCH_SCK_PIN              EXP2_09_PIN  // SPI1_SCK
+  #define TOUCH_MISO_PIN             EXP2_10_PIN  // SPI1_MISO
+  #define TOUCH_MOSI_PIN             EXP2_05_PIN  // SPI1_MOSI
 
   #define LCD_READ_ID                       0xD3
   #define LCD_USE_DMA_SPI
 
-  #define TFT_BUFFER_WORDS                 14400
+  #define TFT_BUFFER_SIZE                  14400
 
   #ifndef TOUCH_CALIBRATION_X
     #define TOUCH_CALIBRATION_X           -17253
@@ -383,10 +383,10 @@
 #endif
 
 #if ANY(TFT_COLOR_UI, TFT_LVGL_UI, TFT_CLASSIC_UI, HAS_WIRED_LCD)
-  #define BEEPER_PIN                 EXP1_01_PIN
+  #define BEEPER_PIN                 EXP1_10_PIN
   #if DISABLED(USE_SPI_DMA_TC)
-    #define BTN_EN1                  EXP2_03_PIN
-    #define BTN_EN2                  EXP2_05_PIN
-    #define BTN_ENC                  EXP1_02_PIN
+    #define BTN_EN1                  EXP2_08_PIN
+    #define BTN_EN2                  EXP2_06_PIN
+    #define BTN_ENC                  EXP1_09_PIN
   #endif
 #endif
