@@ -1741,7 +1741,11 @@
 
 // The size of the printable area
 #define X_BED_SIZE 255
-#define Y_BED_SIZE 210
+#ifdef FB_G6_BLTOUCH
+  #define Y_BED_SIZE 200
+#else
+  #define Y_BED_SIZE 210
+#endif
 
 // Travel limits (linear=mm, rotational=°) after homing, corresponding to endstop positions.
 #define X_MIN_POS -0.2
