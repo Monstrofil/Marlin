@@ -441,13 +441,19 @@ G29_TYPE GcodeSuite::G29() {
       remember_feedrate_scaling_off();
 
       #if ENABLED(PREHEAT_BEFORE_LEVELING)
-        if (!abl.dryrun) probe.preheat_for_probing(LEVELING_NOZZLE_TEMP,
+        if (!abl.dryrun) {
+          // Show preheat screen before starting preheat process
+          #if HAS_GRAPHICAL_TFT && ENABLED(AUTO_BED_LEVELING_BILINEAR)
+            ui.g29_preheat_screen();
+          #endif
+          probe.preheat_for_probing(LEVELING_NOZZLE_TEMP,
           #if BOTH(DWIN_LCD_PROUI, HAS_HEATED_BED)
             HMI_data.BedLevT
           #else
             LEVELING_BED_TEMP
           #endif
         );
+        }
       #endif
     }
 

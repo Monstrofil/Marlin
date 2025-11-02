@@ -798,6 +798,9 @@ public:
     #if ENABLED(AUTO_BED_LEVELING_BILINEAR)
       static void g29_leveling_screen();
       static void g29_leveling_screen_complete(bool success);
+      #if ENABLED(PREHEAT_BEFORE_LEVELING)
+        static void g29_preheat_screen();
+      #endif
     #endif
   #endif
 

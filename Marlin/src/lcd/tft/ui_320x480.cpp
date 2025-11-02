@@ -870,7 +870,7 @@ MotionAxisState motionAxisState;
     if (viewOnly) {
       ui.draw_mesh_grid(GRID_MAX_POINTS_X, GRID_MAX_POINTS_Y, bedlevel.z_values, true);
       add_control(TFT_WIDTH - X_MARGIN - BTN_WIDTH - 8, 385, BACK, imgBackBig);
-      drawBtn(X_MARGIN, 380, "EDT", (intptr_t)remesh, imgCancel, COLOR_WHITE, true);
+      drawBtn(X_MARGIN, 380, "RUN", (intptr_t)remesh, imgCancel, COLOR_WHITE, true);
       tft_string.set(GET_TEXT_F(MSG_G29_VIEW));
     } else {
       ui.draw_mesh_grid((GRID_MAX_POINTS_Y % 2 == 0 ? GRID_MAX_POINTS_X - 1 : 0), 0, bedlevel.z_values, false);
@@ -888,7 +888,7 @@ MotionAxisState motionAxisState;
   }
 
   void MarlinUI::draw_mesh_grid(const uint8_t x_pos, const uint8_t y_pos, const bed_mesh_t mesh, bool probe_done) {
-    const uint8_t rs = 20;
+    const uint8_t rs = 15;
     tft.canvas(GRID_OFFSET_X, GRID_OFFSET_X, GRID_WIDTH, GRID_HEIGHT);
     tft.set_background(COLOR_BACKGROUND);
     tft.add_rectangle(0, 0, GRID_WIDTH, GRID_HEIGHT, COLOR_WHITE);
@@ -918,7 +918,7 @@ MotionAxisState motionAxisState;
             z = -z;
             tft.add_bar(max(0, r_x-rs-7), r_y+rs+17, 6, 3, color);
           }
-          tft_string.set(ftostr13ns(z));
+          tft_string.set(ftostr12ns(z));
           tft_string.trim();
           tft.add_text(r_x-rs, r_y+rs+3, color, tft_string);
         }
@@ -946,6 +946,20 @@ MotionAxisState motionAxisState;
         tft.add_text(tft_string.center(TFT_WIDTH), 5, COLOR_STATUS_MESSAGE, tft_string);
       }
     }
+
+    #if ENABLED(PREHEAT_BEFORE_LEVELING)
+      void MarlinUI::g29_preheat_screen() {
+        ui.clear_lcd();
+        TERN_(TOUCH_SCREEN, touch.clear());
+        tft.canvas(0, 0, TFT_WIDTH, TFT_HEIGHT);
+        tft.set_background(COLOR_BACKGROUND);
+        tft_string.set(GET_TEXT_F(MSG_PREHEATING));
+        tft_string.trim();
+        tft.add_text(tft_string.center(TFT_WIDTH), TFT_HEIGHT/2, COLOR_STATUS_MESSAGE, tft_string);
+        // Disable touch during preheating to prevent EDT button clicks
+        TERN_(HAS_TFT_XPT2046, touch.disable());
+      }
+    #endif
   #endif
 #endif // HAS_MESH
 
