@@ -43,6 +43,7 @@ enum MarlinImage : uint8_t {
   imgFanFast1,          // Fan_Fast1_64x64x4
   imgFeedRate,          // Feedrate_32x32x4
   imgFlowRate,          // Flowrate_32x32x4
+  imgStop,              // Stop_64x64x4
   imgSD,                // SD_64x64x4
   imgMenu,              // Menu_64x64x4
   imgSettings,          // Settings_64x64x4
@@ -135,6 +136,7 @@ extern const tImage Cancel_64x64x4;
 extern const tImage Increase_64x64x4;
 extern const tImage Decrease_64x64x4;
 extern const tImage Pause_64x64x4;
+extern const tImage Stop_64x64x4;
 
 extern const tImage Feedrate_32x32x4;
 extern const tImage Flowrate_32x32x4;

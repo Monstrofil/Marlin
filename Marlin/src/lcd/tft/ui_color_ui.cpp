@@ -256,10 +256,10 @@ void MarlinUI::draw_status_screen() {
   tft.add_rectangle(0, COORDINATES_H - 1, COORDINATES_W, 1, COLOR_AXIS_HOMED);
 
   // Speed display on the right
-  tft_string.set(ftostr5rj(planner.get_current_block()->nominal_speed));
-  tft_string.trim();
-  tft_string.add(" mm/s");
-  tft.add_text(COORDINATES_W - 20 - tft_string.width(), 3, COLOR_WHITE, tft_string);
+  // tft_string.set(ftostr5rj(planner.get_current_block()->nominal_speed));
+  // tft_string.trim();
+  // tft_string.add(" mm/s");
+  // tft.add_text(COORDINATES_W - 20 - tft_string.width(), 3, COLOR_WHITE, tft_string);
 
   // Z position on the left
   #if HAS_Z_AXIS
@@ -382,7 +382,7 @@ void MarlinUI::draw_status_screen() {
       tft.canvas(0, 344, 320, 46);
       tft.set_background(COLOR_BACKGROUND);
       tft_string.set("Print Time: ");
-      tft_string.add(buffer);
+      //tft_string.add(buffer);
       tft.add_text(tft_string.center(320), 10, COLOR_LIGHT_BLUE, tft_string);
 
       // Row 1 - Print control buttons
@@ -391,7 +391,7 @@ void MarlinUI::draw_status_screen() {
       } else {
         add_control(20, 200, RESUME_PRINT, imgSettings); // Resume placeholder
       }
-      add_control(128, 200, STOP, imgCancel, true, COLOR_CORAL_RED);
+      add_control(128, 200, STOP, imgStop, true, COLOR_CORAL_RED);
       add_control(236, 200, menu_main, imgSettings);  // Tune menu placeholder
 
       // Row 2 - Additional controls
@@ -410,12 +410,12 @@ void MarlinUI::draw_status_screen() {
       #if ENABLED(CASE_LIGHT_ENABLE)
         add_control(128, 200, CASE_LIGHT, imgSettings, true, caselight.on ? COLOR_WHITE : COLOR_GREY);
       #endif
-      add_control(236, 200, BUTTON, imgSettings);  // Configuration menu placeholder
+      add_control(236, 200, menu_main, imgSettings);  // Configuration menu placeholder
 
       // Row 2
-      add_control(20, 280, FEEDRATE, imgFeedRate);
+      add_control(20, 280, FEEDRATE, imgSettings);
       
-      add_control(128, 280, MENU_SCREEN, (intptr_t)ui.move_axis_screen, imgHome);
+      add_control(128, 280, MENU_SCREEN, (intptr_t)ui.move_axis_screen, imgStop);
       add_control(236, 280, FLOWRATE, imgFlowRate);
 
       // Row 3

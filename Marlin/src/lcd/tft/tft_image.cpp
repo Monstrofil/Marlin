@@ -43,6 +43,7 @@ const tImage images[imgCount] = {
   Fan_Fast1_64x64x4,                              // imgFanFast1
   Feedrate_32x32x4,                               // imgFeedRate
   Flowrate_32x32x4,                               // imgFlowRate
+  Stop_64x64x4,                                   // imgStop
   SD_64x64x4,                                     // imgSD
   Menu_64x64x4,                                   // imgMenu
   Settings_64x64x4,                               // imgSettings
