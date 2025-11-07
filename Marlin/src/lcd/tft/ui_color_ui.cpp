@@ -250,11 +250,6 @@ void MarlinUI::draw_status_screen() {
     }
   }
 
-  // Coordinates - Z position and speed display (like old UI)
-  #if ENABLED(MOVE_AXIS_SCREEN)
-    TERN_(TOUCH_SCREEN, touch.add_control(MENU_SCREEN, COORDINATES_X, COORDINATES_Y, COORDINATES_W, COORDINATES_H, (intptr_t) ui.move_axis_screen));
-  #endif
-
   tft.canvas(COORDINATES_X, COORDINATES_Y, COORDINATES_W, COORDINATES_H);
   tft.set_background(COLOR_BACKGROUND);
   tft.add_rectangle(0, 0, COORDINATES_W, 1, COLOR_AXIS_HOMED);
@@ -418,9 +413,10 @@ void MarlinUI::draw_status_screen() {
       add_control(236, 200, BUTTON, imgSettings);  // Configuration menu placeholder
 
       // Row 2
-      add_control(128, 280, BUTTON, imgSettings);      // Move axis placeholder
-      add_control(20, 280, FEEDRATE, imgSettings);
-      add_control(236, 280, FLOWRATE, imgSettings);
+      add_control(20, 280, FEEDRATE, imgFeedRate);
+      
+      add_control(128, 280, MENU_SCREEN, (intptr_t)ui.move_axis_screen, imgHome);
+      add_control(236, 280, FLOWRATE, imgFlowRate);
 
       // Row 3
       add_control(20, 360, BED_Z, imgSettings);   // Bed Z placeholder
