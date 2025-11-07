@@ -1150,7 +1150,7 @@
  * Enable/disable and set parameters with G-code M493 and M494.
  * See ft_types.h for named values used by FTM options.
  */
-//#define FT_MOTION
+#define FT_MOTION
 #if ENABLED(FT_MOTION)
   #define FTM_IS_DEFAULT_MOTION               // Use FT Motion as the factory default?
   #define FT_MOTION_MENU                      // Provide a MarlinUI menu to set M493 and M494 parameters
