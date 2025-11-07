@@ -40,6 +40,10 @@
   #include "../../module/probe.h"
 #endif
 
+#if ENABLED(CASE_LIGHT_ENABLE)
+  #include "../../feature/caselight.h"
+#endif
+
 
 #include "tft.h"
 
