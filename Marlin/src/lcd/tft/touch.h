@@ -52,6 +52,10 @@ enum TouchControlType : uint16_t {
   FEEDRATE, FLOWRATE,
   UBL,
   STOP,
+  RESUME_PRINT,
+  PAUSE_PRINT,
+  BED_Z,
+  CASE_LIGHT,
   BUTTON
 };
 

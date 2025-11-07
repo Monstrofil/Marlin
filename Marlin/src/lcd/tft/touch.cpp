@@ -36,6 +36,11 @@
   #include "../../feature/bedlevel/bedlevel.h"
 #endif
 
+#if HAS_BED_PROBE
+  #include "../../module/probe.h"
+#endif
+
+
 #include "tft.h"
 
 Touch touch;
@@ -301,6 +306,32 @@ void Touch::touch(touch_control_t * const control) {
     #if ENABLED(AUTO_BED_LEVELING_UBL)
       case UBL: hold(control, UBL_REPEAT_DELAY); ui.encoderPosition += control->data; break;
     #endif
+
+    case CASE_LIGHT:
+      if (caselight.on) {
+        caselight.on = false;
+      } else {
+        caselight.on = true;
+      }
+      caselight.update_enabled();
+      break;
+
+    case BED_Z:
+      ui.clear_lcd();
+      #if ENABLED(MESH_BED_LEVELING)
+        MenuItem_float43::action(GET_TEXT_F(MSG_MESH_Z_OFFSET), &bedlevel.z_offset, -3, 3);
+      #elif HAS_BED_PROBE
+        MenuItem_float42_52::action(GET_TEXT_F(MSG_MESH_Z_OFFSET), &probe.offset.z, PROBE_OFFSET_ZMIN, PROBE_OFFSET_ZMAX);
+      #endif
+      break;
+
+    case RESUME_PRINT: 
+      ui.resume_print(); 
+      break;
+
+    case PAUSE_PRINT: 
+      ui.pause_print(); 
+      break;
 
     // TODO: TOUCH could receive data to pass to the callback
     case BUTTON: ((screenFunc_t)control->data)(); break;
