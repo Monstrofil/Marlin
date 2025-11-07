@@ -64,6 +64,20 @@ enum MarlinImage : uint8_t {
   imgBtn39Rounded,      // BtnRounded_42x39x4
   imgTimeElapsed,       // Time_Elapsed_32x32x4
   imgTimeRemaining,     // Time_Remaining_32x32x4
+  imgFeedRate64,        // Feedrate_64x64x4
+  imgFlowRate64,        // Flowrate_64x64x4
+  imgLight,             // Light_64x64x4
+  imgMove,              // Move_64x64x4
+  imgSave,              // Save_64x64x4
+  imgTramming,          // Tramming_64x64x4
+  imgWifi,              // Wifi_64x64x4
+  imgZoffset,           // Zoffset_64x64x4
+  imgResume,            // Resume_64x64x4
+  imgPrevous,           // Prevous_64x64x4
+  imgPower,             // Power_64x64x4
+  imgStop,              // Stop_64x64x4
+  imgPause,             // Pause_64x64x4
+  imgFixedTimeMotion,   // Fixed_time_motion_64x64x4
   // Special values - must be at the end!
   imgCount,
   noImage = imgCount,
@@ -148,6 +162,21 @@ extern const tImage Refresh_32x32x4;
 extern const tImage Leveling_32x32x4;
 extern const tImage Time_Elapsed_32x32x4;
 extern const tImage Time_Remaining_32x32x4;
+
+extern const tImage Feedrate_64x64x4;
+extern const tImage Flowrate_64x64x4;
+extern const tImage Light_64x64x4;
+extern const tImage Move_64x64x4;
+extern const tImage Save_64x64x4;
+extern const tImage Tramming_64x64x4;
+extern const tImage Wifi_64x64x4;
+extern const tImage Zoffset_64x64x4;
+extern const tImage Resume_64x64x4;
+extern const tImage Prevous_64x64x4;
+extern const tImage Power_64x64x4;
+extern const tImage Stop_64x64x4;
+extern const tImage Pause_64x64x4;
+extern const tImage Fixed_time_motion_64x64x4;
 
 extern const tImage Slider8x16x4;
 
