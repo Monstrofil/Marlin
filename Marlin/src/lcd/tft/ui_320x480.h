@@ -124,14 +124,14 @@
 #if !defined(MAX_ITEMS) && !defined(ITEM_X) && !defined(ITEM_Y)
   #define MAX_ITEMS                 4
   #define ITEM_X(N)                 (TFT_WIDTH / _MIN(ITEMS_COUNT, MAX_ITEMS) - TEMP_FAN_CONTROL_W) / 2 + (TFT_WIDTH * N / _MIN(ITEMS_COUNT, MAX_ITEMS))
-  #define ITEM_Y                    4
+  #define ITEM_Y                    41
 #endif
 
 #if !defined(COORDINATES_W) && !defined(COORDINATES_H) && !defined(COORDINATES_X) && !defined(COORDINATES_Y)
-  #define COORDINATES_W             TFT_WIDTH - 8
-  #define COORDINATES_H             FONT_LINE_HEIGHT * 2
-  #define COORDINATES_X             4
-  #define COORDINATES_Y             132
+  #define COORDINATES_W             310
+  #define COORDINATES_H             36
+  #define COORDINATES_X             5
+  #define COORDINATES_Y             155
 #endif
 
 #if !defined(E_MARK_X) && !defined(E_MARK_Y) && !defined(E_VALUE_X) && !defined(E_VALUE_Y)
@@ -141,19 +141,19 @@
   #define E_VALUE_Y                 VCENTER + FONT_LINE_HEIGHT
 #endif
 
-#if !defined(X_MARK_X) && !defined(X_MARK_Y) && !defined(X_VALUE_X) && !defined(X_VALUE_Y)
-  #define X_MARK_X                  10
-  #define X_MARK_Y                  VCENTER
-  #define X_VALUE_X                 103 - tft_string.width()
-  #define X_VALUE_Y                 VCENTER
-#endif
+// #if !defined(X_MARK_X) && !defined(X_MARK_Y) && !defined(X_VALUE_X) && !defined(X_VALUE_Y)
+//   #define X_MARK_X                  10
+//   #define X_MARK_Y                  VCENTER
+//   #define X_VALUE_X                 103 - tft_string.width()
+//   #define X_VALUE_Y                 VCENTER
+// #endif
 
-#if !defined(Y_MARK_X) && !defined(Y_MARK_Y) && !defined(Y_VALUE_X) && !defined(Y_VALUE_Y)
-  #define Y_MARK_X                  176
-  #define Y_MARK_Y                  VCENTER
-  #define Y_VALUE_X                 265 - tft_string.width()
-  #define Y_VALUE_Y                 VCENTER
-#endif
+// #if !defined(Y_MARK_X) && !defined(Y_MARK_Y) && !defined(Y_VALUE_X) && !defined(Y_VALUE_Y)
+//   #define Y_MARK_X                  176
+//   #define Y_MARK_Y                  VCENTER
+//   #define Y_VALUE_X                 265 - tft_string.width()
+//   #define Y_VALUE_Y                 VCENTER
+// #endif
 
 #if !defined(Z_MARK_X) && !defined(Z_MARK_Y) && !defined(Z_VALUE_X) && !defined(Z_VALUE_Y)
   #define Z_MARK_X                  176
@@ -163,6 +163,14 @@
   #define Z_VALUE_OFFSET            32
 #endif
 
+// Combined feedrate and flowrate canvas (like old UI)
+#if !defined(FEEDRATE_FLOWRATE_W) && !defined(FEEDRATE_FLOWRATE_H) && !defined(FEEDRATE_FLOWRATE_X) && !defined(FEEDRATE_FLOWRATE_Y)
+  #define FEEDRATE_FLOWRATE_W       310
+  #define FEEDRATE_FLOWRATE_H       36
+  #define FEEDRATE_FLOWRATE_X       5
+  #define FEEDRATE_FLOWRATE_Y       5
+#endif
+
 #if !defined(FEEDRATE_W) && !defined(FEEDRATE_H) && !defined(FEEDRATE_X) && !defined(FEEDRATE_Y)
   #define FEEDRATE_W                120
   #define FEEDRATE_H                32
@@ -170,10 +178,10 @@
   #define FEEDRATE_Y                218
 #endif
 #if !defined(FEEDRATE_ICON_X) && !defined(FEEDRATE_ICON_Y) && !defined(FEEDRATE_ICON_Y) && !defined(FEEDRATE_TEXT_Y)
-  #define FEEDRATE_ICON_X           0
-  #define FEEDRATE_ICON_Y           0
-  #define FEEDRATE_TEXT_X           36
-  #define FEEDRATE_TEXT_Y           tft_string.vcenter(30)
+  #define FEEDRATE_ICON_X           5
+  #define FEEDRATE_ICON_Y           3
+  #define FEEDRATE_TEXT_X           40
+  #define FEEDRATE_TEXT_Y           3
 #endif
 
 #if !defined(FLOWRATE_W) && !defined(FLOWRATE_H) && !defined(FLOWRATE_X) && !defined(FLOWRATE_Y)
@@ -183,10 +191,18 @@
   #define FLOWRATE_Y                218
 #endif
 #if !defined(FLOWRATE_ICON_X) && !defined(FLOWRATE_ICON_Y) && !defined(FLOWRATE_TEXT_X) && !defined(FLOWRATE_TEXT_Y)
-  #define FLOWRATE_ICON_X           0
-  #define FLOWRATE_ICON_Y           0
-  #define FLOWRATE_TEXT_X           36
-  #define FLOWRATE_TEXT_Y           tft_string.vcenter(30)
+  #define FLOWRATE_ICON_X           210
+  #define FLOWRATE_ICON_Y           3
+  #define FLOWRATE_TEXT_X           250
+  #define FLOWRATE_TEXT_Y           3
+#endif
+
+// Z offset display in combined canvas
+#if !defined(ZOFFSET_ICON_X) && !defined(ZOFFSET_ICON_Y) && !defined(ZOFFSET_TEXT_X) && !defined(ZOFFSET_TEXT_Y)
+  #define ZOFFSET_ICON_X            95
+  #define ZOFFSET_ICON_Y            1
+  #define ZOFFSET_TEXT_X            198
+  #define ZOFFSET_TEXT_Y            3
 #endif
 
 #if !defined(MENU_ICON_X) && !defined(MENU_ICON_Y)
