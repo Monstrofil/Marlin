@@ -25,9 +25,11 @@
 #if ENABLED(TFT_COLOR_UI)
 
 #include "ui_common.h"
+#include "ui_quick_buttons_menu.h"
 
 #include "../marlinui.h"
 #include "../menu/menu.h"
+#include "../menu/menu_item.h"
 #include "../../libs/numtostr.h"
 
 #include "../../sd/cardreader.h"
@@ -55,6 +57,10 @@
 
 #if ENABLED(CASE_LIGHT_ENABLE)
   #include "../../feature/caselight.h"
+#endif
+
+#if ENABLED(FT_MOTION_MENU)
+  void menu_ft_motion();
 #endif
 
 void MarlinUI::tft_idle() {
@@ -185,16 +191,20 @@ void draw_heater_status(uint16_t x, uint16_t y, const int8_t heater) {
   tft.add_image(TEMP_ICON_X, TEMP_ICON_Y, image, color);
 
   tft_string.set(i16tostr3rj(currentTemperature));
-  tft_string.add(LCD_STR_DEGREE);
-  tft_string.trim();
-  tft.add_text(TEMP_CURRENT_TEXT_X, TEMP_CURRENT_TEXT_Y, color, tft_string);
-
-  if (targetTemperature >= 0) {
-    tft_string.set(i16tostr3rj(targetTemperature));
-    tft_string.add(LCD_STR_DEGREE);
-    tft_string.trim();
-    tft.add_text(TEMP_TARGET_TEXT_X, TEMP_TARGET_TEXT_Y, color, tft_string);
+  const bool has_target = targetTemperature >= 0;
+  if (has_target) {
+    tft_string.add('/');
+    tft_string.add(i16tostr3left(targetTemperature));
   }
+
+  tft_string.trim();
+
+  const auto &icon = images[image];
+
+  const uint16_t text_width = tft_string.width();
+  const uint16_t text_x = tft_string.center(TEMP_ICON_X + icon.width / 2);
+  const uint16_t text_y = TEMP_ICON_Y + icon.height;
+  tft.add_text(text_x, text_y, color, tft_string, tft_string.width() + 10);
 }
 
 void draw_fan_status(uint16_t x, uint16_t y, const bool blink) {
@@ -215,10 +225,117 @@ void draw_fan_status(uint16_t x, uint16_t y, const bool blink) {
   tft.add_image(FAN_ICON_X, FAN_ICON_Y, image, COLOR_FAN);
 
   tft_string.set(ui8tostr4pctrj(thermalManager.fan_speed[0]));
+
   tft_string.trim();
-  tft.add_text(FAN_TEXT_X, FAN_TEXT_Y, COLOR_FAN, tft_string);
+  const uint16_t text_width = tft_string.width();
+  const auto &icon = images[image];
+  uint16_t text_x = FAN_ICON_X;
+  if (icon.width > text_width)
+    text_x += (icon.width - text_width) / 2;
+  const uint16_t text_y = FAN_ICON_Y + icon.height;
+  tft.add_text(text_x, text_y, COLOR_FAN, tft_string);
 }
 
+#if ENABLED(TOUCH_SCREEN)
+
+QUICK_ACCESS_BEGIN(
+  StatusQuickAccessPrinting, 
+  20,  /* ORIGIN_X */
+  255, /* ORIGIN_Y */
+  108, /* WIDTH */
+  80,  /* HEIGHT */
+  3,   /* COLUMNS */
+  1)   /* ROWS */
+
+  QUICK_ACCESS_BUTTON_BEGIN();
+    add_control(BTN_X, BTN_Y, FEEDRATE, imgFeedRate64);
+  QUICK_ACCESS_BUTTON_END();
+  
+  QUICK_ACCESS_BUTTON_BEGIN();
+    add_control(BTN_X, BTN_Y, BED_Z, imgZoffset);
+  QUICK_ACCESS_BUTTON_END();
+
+  QUICK_ACCESS_BUTTON_BEGIN();
+    add_control(BTN_X, BTN_Y, FLOWRATE, imgFlowRate64);
+  QUICK_ACCESS_BUTTON_END();
+
+  QUICK_ACCESS_BUTTON_BEGIN();
+    add_control(BTN_X, BTN_Y, menu_ft_motion, imgFixedTimeMotion);
+  QUICK_ACCESS_BUTTON_END();
+
+  #if ENABLED(CASE_LIGHT_ENABLE)
+    QUICK_ACCESS_BUTTON_BEGIN();
+      add_control(BTN_X, BTN_Y, CASE_LIGHT, imgLight, true, caselight.on ? COLOR_WHITE : COLOR_GREY);
+    QUICK_ACCESS_BUTTON_END();
+  #endif
+
+
+QUICK_ACCESS_END(StatusQuickAccessPrinting)
+
+QUICK_ACCESS_BEGIN(StatusQuickAccessIdle, 
+  20,  /* ORIGIN_X */
+  175, /* ORIGIN_Y */
+  108, /* WIDTH */
+  80,  /* HEIGHT */
+  3,   /* COLUMNS */
+  3)   /* ROWS */
+  #if HAS_MEDIA
+    QUICK_ACCESS_BUTTON_BEGIN();
+      const bool cm = card.isMounted(), pa = printingIsActive();
+      add_control(BTN_X, BTN_Y, menu_file_selector, imgSD,
+        cm && !pa, COLOR_CONTROL_ENABLED, cm && pa ? COLOR_BUSY : COLOR_CONTROL_DISABLED);
+    QUICK_ACCESS_BUTTON_END();
+  #endif
+
+  #if ENABLED(CASE_LIGHT_ENABLE)
+    QUICK_ACCESS_BUTTON_BEGIN();
+      add_control(BTN_X, BTN_Y, CASE_LIGHT, imgLight, true, caselight.on ? COLOR_WHITE : COLOR_GREY);
+    QUICK_ACCESS_BUTTON_END();
+  #endif
+
+  QUICK_ACCESS_BUTTON_BEGIN();
+    add_control(BTN_X, BTN_Y, menu_main, imgSettings);
+  QUICK_ACCESS_BUTTON_END();
+
+  QUICK_ACCESS_BUTTON_BEGIN();
+    add_control(BTN_X, BTN_Y, FEEDRATE, imgFeedRate64);
+  QUICK_ACCESS_BUTTON_END();
+
+  QUICK_ACCESS_BUTTON_BEGIN();
+    add_control(BTN_X, BTN_Y, MENU_SCREEN, (intptr_t)ui.move_axis_screen, imgMove);
+  QUICK_ACCESS_BUTTON_END();
+
+  QUICK_ACCESS_BUTTON_BEGIN();
+    add_control(BTN_X, BTN_Y, FLOWRATE, imgFlowRate64);
+  QUICK_ACCESS_BUTTON_END();
+
+  QUICK_ACCESS_BUTTON_BEGIN();
+    add_control(BTN_X, BTN_Y, BED_Z, imgZoffset);
+  QUICK_ACCESS_BUTTON_END();
+
+  QUICK_ACCESS_BUTTON_BEGIN();
+    add_control(BTN_X, BTN_Y, _lcd_bed_tramming, imgTramming);
+  QUICK_ACCESS_BUTTON_END();
+
+  QUICK_ACCESS_BUTTON_BEGIN();
+    add_control(BTN_X, BTN_Y, menu_ft_motion, imgFixedTimeMotion);
+  QUICK_ACCESS_BUTTON_END();
+
+  QUICK_ACCESS_BUTTON_BEGIN();
+    add_control(BTN_X, BTN_Y, BUTTON, imgSettings);
+  QUICK_ACCESS_BUTTON_END();
+
+  QUICK_ACCESS_BUTTON_BEGIN();
+    add_control(BTN_X, BTN_Y, BUTTON, imgSettings);
+  QUICK_ACCESS_BUTTON_END();
+
+  QUICK_ACCESS_BUTTON_BEGIN();
+    add_control(BTN_X, BTN_Y, BUTTON, imgSettings);
+  QUICK_ACCESS_BUTTON_END();
+
+QUICK_ACCESS_END(StatusQuickAccessIdle)
+
+#endif
 void MarlinUI::draw_status_screen() {
   const bool blink = get_blink();
   TERN_(TOUCH_SCREEN, touch.clear());
@@ -256,14 +373,17 @@ void MarlinUI::draw_status_screen() {
   tft.add_rectangle(0, COORDINATES_H - 1, COORDINATES_W, 1, COLOR_AXIS_HOMED);
 
   // Speed display on the right
-  // tft_string.set(ftostr5rj(planner.get_current_block()->nominal_speed));
-  // tft_string.trim();
-  // tft_string.add(" mm/s");
-  // tft.add_text(COORDINATES_W - 20 - tft_string.width(), 3, COLOR_WHITE, tft_string);
+  if (planner.get_current_block()) {
+
+    tft_string.set(ftostr5rj(planner.get_current_block()->nominal_speed));
+    tft_string.trim();
+    tft_string.add(" mm/s");
+    tft.add_text(COORDINATES_W - 20 - tft_string.width(), 3, COLOR_WHITE, tft_string);
+  }
 
   // Z position on the left
   #if HAS_Z_AXIS
-    tft.add_text(25, 3, COLOR_AXIS_HOMED, "Z");
+    tft.add_text(25, 1, COLOR_AXIS_HOMED, "Z");
     uint16_t offset = 10;
     const bool nhz = axis_should_home(Z_AXIS);
     if (blink && nhz)
@@ -320,21 +440,19 @@ void MarlinUI::draw_status_screen() {
 
 
   #if ANY(SHOW_ELAPSED_TIME, SHOW_REMAINING_TIME)
-    char buffer[22];
+    char elapsed_buffer[22];
+    char remaining_buffer[22];
+    bool have_elapsed_time = false;
+    bool have_remaining_time = false;
     duration_t elapsed = print_job_timer.duration();
+    uint16_t remaining_time_color = COLOR_PRINT_TIME;
   #endif
 
   const progress_t progress = TERN(HAS_PRINT_PROGRESS_PERMYRIAD, get_progress_permyriad, get_progress_percent)();
 
   #if ENABLED(SHOW_ELAPSED_TIME)
-    elapsed.toDigital(buffer);
-    tft.canvas(ELAPSED_TIME_X, ELAPSED_TIME_Y, ELAPSED_TIME_W, ELAPSED_TIME_H);
-    tft.set_background(COLOR_BACKGROUND);
-    tft_string.set(buffer);
-    #if defined(ELAPSED_TIME_IMAGE_X) && defined(ELAPSED_TIME_IMAGE_Y)
-      tft.add_image(ELAPSED_TIME_IMAGE_X, ELAPSED_TIME_IMAGE_Y, imgTimeElapsed, COLOR_PRINT_TIME);
-    #endif
-    tft.add_text(ELAPSED_TIME_TEXT_X, ELAPSED_TIME_TEXT_Y, COLOR_PRINT_TIME, tft_string);
+    elapsed.toDigital(elapsed_buffer);
+    have_elapsed_time = true;
   #endif
 
   #if ENABLED(SHOW_REMAINING_TIME)
@@ -349,80 +467,99 @@ void MarlinUI::draw_status_screen() {
       estimate_remaining = elapsed.value * (100 * (PROGRESS_SCALE) - progress) / progress;
 
     // Generate estimate string
-    if (!estimate_remaining)
-      tft_string.set("-");
+    if (!estimate_remaining) {
+      remaining_buffer[0] = '-';
+      remaining_buffer[1] = '\0';
+    }
     else {
       duration_t estimation = estimate_remaining;
-      estimation.toString(buffer);
-      tft_string.set(buffer);
+      estimation.toString(remaining_buffer);
     }
-
-    tft.canvas(REMAINING_TIME_X, REMAINING_TIME_Y, REMAINING_TIME_W, REMAINING_TIME_H);
-    tft.set_background(COLOR_BACKGROUND);
-    tft_string.set(buffer);
-    color = printingIsActive() ? COLOR_PRINT_TIME : COLOR_INACTIVE;
-    #if defined(REMAINING_TIME_IMAGE_X) && defined(REMAINING_TIME_IMAGE_Y)
-      tft.add_image(REMAINING_TIME_IMAGE_X, REMAINING_TIME_IMAGE_Y, imgTimeRemaining, color);
-    #endif
-    tft.add_text(REMAINING_TIME_TEXT_X, REMAINING_TIME_TEXT_Y, color, tft_string);
+    remaining_time_color = printingIsActive() ? COLOR_PRINT_TIME : COLOR_INACTIVE;
+    have_remaining_time = true;
   #endif
 
-  // Progress bar
-  // TODO: print percentage text for SHOW_PROGRESS_PERCENT
-  tft.canvas(PROGRESS_BAR_X, PROGRESS_BAR_Y, PROGRESS_BAR_W, PROGRESS_BAR_H);
-  tft.set_background(COLOR_PROGRESS_BG);
-  tft.add_rectangle(0, 0, PROGRESS_BAR_W, PROGRESS_BAR_H, COLOR_PROGRESS_FRAME);
-  if (progress)
-    tft.add_bar(1, 1, ((PROGRESS_BAR_W - 2) * progress / (PROGRESS_SCALE)) / 100, 7, COLOR_PROGRESS_BAR);
-
-  // Quick access buttons (like old UI)
-  #if ENABLED(TOUCH_SCREEN)
+  #if ANY(SHOW_ELAPSED_TIME, SHOW_REMAINING_TIME)
     if (printingIsActive() || printingIsPaused()) {
-      // Print time display
-      tft.canvas(0, 344, 320, 46);
+      constexpr uint16_t TIME_ROW_X = 20;
+      #if ENABLED(SHOW_ELAPSED_TIME)
+        constexpr uint16_t TIME_ROW_Y = ELAPSED_TIME_Y;
+        constexpr uint16_t TIME_ROW_H = ELAPSED_TIME_H;
+      #else
+        constexpr uint16_t TIME_ROW_Y = REMAINING_TIME_Y;
+        constexpr uint16_t TIME_ROW_H = REMAINING_TIME_H;
+      #endif
+      constexpr uint16_t TIME_ROW_W = TFT_WIDTH - (TIME_ROW_X * 2);
+      constexpr uint16_t TIME_ROW_EDGE = 4;
+      constexpr uint16_t TIME_LABEL_SPACING = 8;
+      constexpr uint16_t TIME_LABEL_WIDTH = 20;
+
+      tft.canvas(TIME_ROW_X, TIME_ROW_Y, TIME_ROW_W, TIME_ROW_H);
       tft.set_background(COLOR_BACKGROUND);
-      tft_string.set("Print Time: ");
-      tft_string.add(buffer);
-      tft.add_text(tft_string.center(320), 10, COLOR_LIGHT_BLUE, tft_string);
 
-      // Row 1 - Print control buttons
-      if (!printingIsPaused()) {
-        add_control(20, 200, PAUSE_PRINT, imgSettings);  // Pause placeholder
-      } else {
-        add_control(20, 200, RESUME_PRINT, imgSettings); // Resume placeholder
-      }
-      add_control(128, 200, STOP, imgCancel, true, COLOR_CORAL_RED);
-      add_control(236, 200, menu_main, imgSettings);  // Tune menu placeholder
-
-      // Row 2 - Additional controls
-      #if ENABLED(CASE_LIGHT_ENABLE)
-        add_control(20, 280, BUTTON, imgSettings, true, caselight.on ? COLOR_WHITE : COLOR_GREY);
+      #if ENABLED(SHOW_ELAPSED_TIME)
+        if (have_elapsed_time) {
+          tft_string.set(elapsed_buffer);
+          const uint16_t elapsed_text_y = tft_string.vcenter(TIME_ROW_H);
+          uint16_t cursor_x = TIME_ROW_EDGE;
+          tft.set_background(COLOR_BACKGROUND);
+          tft.add_text(cursor_x, tft_string.vcenter(TIME_ROW_H), COLOR_PRINT_TIME, "E");
+          cursor_x += TIME_LABEL_WIDTH + TIME_LABEL_SPACING;
+          tft.add_text(cursor_x, elapsed_text_y, COLOR_PRINT_TIME, tft_string);
+        }
       #endif
-      add_control(128, 280, BUTTON, imgSettings);  // Babystep placeholder
-      add_control(236, 280, BUTTON, imgRight);     // Next screen placeholder
-    } else {
-      // Not printing - show main controls
-      // Row 1
-      #if HAS_MEDIA
-        const bool cm = card.isMounted(), pa = printingIsActive();
-        add_control(20, 200, menu_file_selector, imgSD, cm && !pa, COLOR_CONTROL_ENABLED, cm && pa ? COLOR_BUSY : COLOR_CONTROL_DISABLED);  // Media menu placeholder
-      #endif
-      #if ENABLED(CASE_LIGHT_ENABLE)
-        add_control(128, 200, CASE_LIGHT, imgSettings, true, caselight.on ? COLOR_WHITE : COLOR_GREY);
-      #endif
-      add_control(236, 200, BUTTON, imgSettings);  // Configuration menu placeholder
 
-      // Row 2
-      add_control(20, 280, FEEDRATE, imgFeedRate);
-      
-      add_control(128, 280, MENU_SCREEN, (intptr_t)ui.move_axis_screen, imgHome);
-      add_control(236, 280, FLOWRATE, imgFlowRate);
-
-      // Row 3
-      add_control(20, 360, BED_Z, imgSettings);   // Bed Z placeholder
-      add_control(128, 360, BUTTON, imgSettings);  // Tramming placeholder
-      add_control(236, 360, BUTTON, imgSettings);     // Next screen placeholder
+      #if ENABLED(SHOW_REMAINING_TIME)
+        if (have_remaining_time) {
+          tft_string.set(remaining_buffer);
+          const uint16_t remaining_text_y = tft_string.vcenter(TIME_ROW_H);
+          int16_t cursor_x = int16_t(TIME_ROW_W) - TIME_ROW_EDGE;
+          cursor_x -= tft_string.width();
+          tft.add_text(cursor_x, remaining_text_y, remaining_time_color, tft_string);
+          cursor_x -= TIME_LABEL_SPACING + TIME_LABEL_WIDTH;
+          tft.add_text(cursor_x, tft_string.vcenter(TIME_ROW_H), remaining_time_color, "R");
+        }
+      #endif
     }
+  #endif
+
+  if (printingIsActive() || printingIsPaused()) {
+    // Progress bar
+    // TODO: print percentage text for SHOW_PROGRESS_PERCENT
+    tft.canvas(PROGRESS_BAR_X, PROGRESS_BAR_Y, PROGRESS_BAR_W, PROGRESS_BAR_H);
+    tft.set_background(COLOR_PROGRESS_BG);
+    tft.add_rectangle(0, 0, PROGRESS_BAR_W, PROGRESS_BAR_H, COLOR_PROGRESS_FRAME);
+    if (progress)
+      tft.add_bar(1, 1, ((PROGRESS_BAR_W - 2) * progress / (PROGRESS_SCALE)) / 100, 7, COLOR_PROGRESS_BAR);
+  }
+
+  // Quick access buttons with paging controls
+  #if ENABLED(TOUCH_SCREEN)
+    const bool is_paused = printingIsPaused();
+    const bool quick_access_printing = printingIsActive() || is_paused;
+    if (quick_access_printing) {
+      constexpr uint16_t ORIGIN_X = 20;
+      constexpr uint16_t ORIGIN_Y = 175;
+      constexpr uint16_t SPACING_X = 108;
+      constexpr uint16_t ROW_HEIGHT = 80;
+
+      tft.canvas(ORIGIN_X, ORIGIN_Y, SPACING_X * 3, ROW_HEIGHT);
+      tft.set_background(COLOR_BACKGROUND);
+
+      uint16_t btn_x = ORIGIN_X;
+
+      add_control(btn_x, ORIGIN_Y, is_paused ? RESUME_PRINT : PAUSE_PRINT, is_paused ? imgResume : imgPause, true, COLOR_DARK_ORANGE);
+      btn_x += SPACING_X;
+
+      add_control(btn_x, ORIGIN_Y, STOP, imgStop, true, COLOR_CORAL_RED);
+      btn_x += SPACING_X;
+
+      add_control(btn_x, ORIGIN_Y, menu_main, imgSettings);
+
+      StatusQuickAccessPrinting::draw();
+    }
+    else
+      StatusQuickAccessIdle::draw();
   #endif
 
   // Status message

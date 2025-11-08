@@ -96,16 +96,16 @@
 
 // draw_heater_status() and draw_fan_status()
 #if !defined(TEMP_FAN_CONTROL_W) && !defined(TEMP_FAN_CONTROL_H)
-  #define TEMP_FAN_CONTROL_W        80
-  #define TEMP_FAN_CONTROL_H        120
+  #define TEMP_FAN_CONTROL_W        100
+  #define TEMP_FAN_CONTROL_H        92
 #endif
 #if !defined(TEMP_ICON_X) && !defined(TEMP_ICON_Y)
-  #define TEMP_ICON_X               0
-  #define TEMP_ICON_Y               28
+  #define TEMP_ICON_X               (TEMP_FAN_CONTROL_W - 64) / 2
+  #define TEMP_ICON_Y               1
 #endif
 #if !defined(FAN_ICON_X) && !defined(FAN_ICON_Y)
-  #define FAN_ICON_X                0
-  #define FAN_ICON_Y                20
+  #define FAN_ICON_X                (TEMP_FAN_CONTROL_W - 64) / 2
+  #define FAN_ICON_Y                1
 #endif
 
 #if !defined(TEMP_CURRENT_TEXT_X) && !defined(TEMP_CURRENT_TEXT_Y) && !defined(TEMP_TARGET_TEXT_X) && !defined(TEMP_TARGET_TEXT_Y)
@@ -116,7 +116,7 @@
 #endif
 
 #if !defined(FAN_TEXT_X) && !defined(FAN_TEXT_Y)
-  #define FAN_TEXT_X                tft_string.center(TEMP_FAN_CONTROL_W) + 6
+  #define FAN_TEXT_X                tft_string.center(TEMP_FAN_CONTROL_W) + 3
   #define FAN_TEXT_Y                80 + VCENTER
 #endif
 
@@ -124,15 +124,15 @@
 #if !defined(MAX_ITEMS) && !defined(ITEM_X) && !defined(ITEM_Y)
   #define MAX_ITEMS                 4
   #define ITEM_X(N)                 (TFT_WIDTH / _MIN(ITEMS_COUNT, MAX_ITEMS) - TEMP_FAN_CONTROL_W) / 2 + (TFT_WIDTH * N / _MIN(ITEMS_COUNT, MAX_ITEMS))
-  #define ITEM_Y                    41
+  #define ITEM_Y                    42
 #endif
 
 #if !defined(COORDINATES_W) && !defined(COORDINATES_H) && !defined(COORDINATES_X) && !defined(COORDINATES_Y)
   #define COORDINATES_W             310
-  #define COORDINATES_H             36
   #define COORDINATES_X             5
-  #define COORDINATES_Y             155
-#endif
+  #define COORDINATES_H             30
+  #endif
+  #define COORDINATES_Y             135
 
 #if !defined(E_MARK_X) && !defined(E_MARK_Y) && !defined(E_VALUE_X) && !defined(E_VALUE_Y)
   #define E_MARK_X                  10
