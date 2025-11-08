@@ -283,6 +283,8 @@ void menu_probe_level() {
           // Manual leveling uses a guided procedure
           SUBMENU(MSG_LEVEL_BED, _lcd_level_bed_continue);
         #endif
+      #elif HAS_GRAPHICAL_TFT && HAS_MESH && ENABLED(AUTO_BED_LEVELING_BILINEAR)
+        ACTION_ITEM(MSG_LEVEL_BED, MarlinUI::mesh_view_screen);
       #else
         // Automatic leveling can just run the G-code
         GCODES_ITEM(MSG_LEVEL_BED, is_homed ? F("G29") : F("G29N"));

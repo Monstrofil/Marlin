@@ -27,6 +27,10 @@
 #include "../libs/buzzer.h"
 #include "buttons.h"
 
+#if HAS_MESH
+  #include "../feature/bedlevel/bedlevel.h"
+#endif
+
 #if ENABLED(EEPROM_SETTINGS)
   #include "../module/settings.h"
 #endif
@@ -886,6 +890,17 @@ public:
 
   #if HAS_GRAPHICAL_TFT
     static void move_axis_screen();
+    #if HAS_MESH
+      static void mesh_view_screen();
+      static void draw_mesh_grid(const uint8_t x_pos, const uint8_t y_pos, const bed_mesh_t mesh, const bool probe_done);
+      #if ENABLED(AUTO_BED_LEVELING_BILINEAR)
+        static void g29_leveling_screen();
+        static void g29_leveling_screen_complete(const bool success);
+        #if ENABLED(PREHEAT_BEFORE_LEVELING)
+          static void g29_preheat_screen();
+        #endif
+      #endif
+    #endif
   #endif
 
 private:

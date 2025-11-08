@@ -1128,6 +1128,9 @@ namespace LanguageNarrow_en {
   LSTR MSG_PROGRESS_HOMING                = _UxGT("Homing");
   LSTR MSG_PROGRESS_MOVING_SELECTOR       = _UxGT("Moving selector");
   LSTR MSG_PROGRESS_FEED_FSENSOR          = _UxGT("Feeding to FSensor");
+
+  LSTR MSG_G29_PROCESSING				          = _UxGT("Autoleveling...");
+  LSTR MSG_G29_VIEW  				              = _UxGT("View current mesh");
 }
 
 namespace LanguageWide_en {

@@ -457,6 +457,9 @@ G29_TYPE GcodeSuite::G29() {
           rts.sendData(1, Wait_VP);
           rts.gotoPage(ID_ABL_HeatWait_L, ID_ABL_HeatWait_D);
         #endif
+        #if HAS_GRAPHICAL_TFT && ENABLED(AUTO_BED_LEVELING_BILINEAR)
+          ui.g29_preheat_screen();
+        #endif
         if (!abl.dryrun) probe.preheat_for_probing(LEVELING_NOZZLE_TEMP,
           TERN(EXTENSIBLE_UI, ExtUI::getLevelingBedTemp(), LEVELING_BED_TEMP)
         );
@@ -673,6 +676,9 @@ G29_TYPE GcodeSuite::G29() {
 
     #if ABL_USES_GRID
 
+      ui.push_current_screen();
+      ui.goto_screen((screenFunc_t) ui.g29_leveling_screen);
+
       bool zig = PR_OUTER_SIZE & 1;  // Always end at RIGHT and BACK_PROBE_BED_POSITION
 
       // Outer loop is X with PROBE_Y_FIRST enabled
@@ -710,6 +716,7 @@ G29_TYPE GcodeSuite::G29() {
 
           if (abl.verbose_level) SERIAL_ECHOLNPGM("Probing mesh point ", pt_index, "/", abl.abl_points, ".");
           TERN_(HAS_STATUS_MESSAGE, ui.status_printf(0, F(S_FMT " %i/%i"), GET_TEXT(MSG_PROBING_POINT), int(pt_index), int(abl.abl_points)));
+          ui.draw_mesh_grid(abl.meshCount.x, abl.meshCount.y, abl.z_values, false);
 
           #if ENABLED(BD_SENSOR_PROBE_NO_STOP)
             if (PR_INNER_VAR == inStart) {
@@ -775,6 +782,7 @@ G29_TYPE GcodeSuite::G29() {
 
           if (isnan(abl.measured_z)) {
             set_bed_leveling_enabled(abl.reenable);
+            ui.g29_leveling_screen_complete(false);
             break; // Breaks out of both loops
           }
 
@@ -802,6 +810,7 @@ G29_TYPE GcodeSuite::G29() {
 
           #endif
 
+          ui.draw_mesh_grid(abl.meshCount.x, abl.meshCount.y, abl.z_values, true);
           abl.reenable = false; // Don't re-enable after modifying the mesh
           idle_no_sleep();
 
@@ -1005,6 +1014,8 @@ G29_TYPE GcodeSuite::G29() {
     #endif
 
   } // !isnan(abl.measured_z)
+  
+  ui.g29_leveling_screen_complete(!isnan(abl.measured_z));
 
   // Restore state after probing
   if (!faux) restore_feedrate_and_scaling();

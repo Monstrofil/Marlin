@@ -38,12 +38,16 @@
 #include "../../module/planner.h"
 #include "../../module/motion.h"
 
+#include <math.h>
+
 #if DISABLED(LCD_PROGRESS_BAR) && ALL(FILAMENT_LCD_DISPLAY, HAS_MEDIA)
   #include "../../feature/filwidth.h"
   #include "../../gcode/parser.h"
 #endif
 
-#if ENABLED(AUTO_BED_LEVELING_UBL)
+#include "../../gcode/queue.h"
+
+#if HAS_MESH
   #include "../../feature/bedlevel/bedlevel.h"
 #endif
 
@@ -286,6 +290,10 @@ QUICK_ACCESS_BEGIN(StatusQuickAccessIdle,
         cm && !pa, COLOR_CONTROL_ENABLED, cm && pa ? COLOR_BUSY : COLOR_CONTROL_DISABLED);
     QUICK_ACCESS_BUTTON_END();
   #endif
+  
+  QUICK_ACCESS_BUTTON_BEGIN();
+    add_control(BTN_X, BTN_Y, ui.mesh_view_screen, imgStop);
+  QUICK_ACCESS_BUTTON_END();
 
   #if ENABLED(CASE_LIGHT_ENABLE)
     QUICK_ACCESS_BUTTON_BEGIN();
@@ -692,6 +700,154 @@ void MenuItem_confirm::draw_select_screen(FSTR_P const yes, FSTR_P const no, con
   }
 
 #endif // ADVANCED_PAUSE_FEATURE
+
+#if HAS_MESH
+
+  #if ENABLED(MESH_BED_LEVELING)
+    extern void _lcd_level_bed_continue();
+  #endif
+
+  namespace {
+
+    constexpr uint16_t MESH_GRID_OFFSET_X = 8;
+    constexpr uint16_t MESH_GRID_OFFSET_Y = 8;
+    constexpr uint16_t MESH_GRID_WIDTH    = 300;
+    constexpr uint16_t MESH_GRID_HEIGHT   = 300;
+
+    void remesh() {
+      #if ENABLED(MESH_BED_LEVELING)
+        _lcd_level_bed_continue();
+      #elif ENABLED(HAS_AUTOLEVEL)
+        ui.clear_lcd();
+        TERN_(TOUCH_SCREEN, touch.clear());
+        tft.canvas(0, 0, TFT_WIDTH, TFT_HEIGHT);
+        tft.set_background(COLOR_BACKGROUND);
+        tft_string.set(GET_TEXT_F(MSG_HOMING));
+        tft_string.trim();
+        tft.add_text(tft_string.center(TFT_WIDTH), TFT_HEIGHT / 2, COLOR_STATUS_MESSAGE, tft_string);
+        const bool homed = all_axes_homed();
+        queue.inject(homed ? F("G29") : F("G29N"));
+      #endif
+    }
+
+    void mesh_leveling_screen(const bool view_only) {
+      ui.defer_status_screen(true);
+      ui.clear_lcd();
+      TERN_(TOUCH_SCREEN, touch.clear());
+
+      if (view_only) {
+        ui.draw_mesh_grid(GRID_MAX_POINTS_X, GRID_MAX_POINTS_Y, bedlevel.z_values, true);
+        add_control(TFT_WIDTH - 4 - 64 - 8, 385, BACK, imgBack);
+        drawBtn(4, 380, "RUN", remesh, imgCancel, COLOR_WHITE, true);
+        tft_string.set(GET_TEXT_F(MSG_G29_VIEW));
+      }
+      else {
+        ui.draw_mesh_grid(GRID_MAX_POINTS_Y % 2 == 0 ? GRID_MAX_POINTS_X - 1 : 0, 0, bedlevel.z_values, false);
+        tft_string.set(GET_TEXT_F(MSG_G29_PROCESSING));
+      }
+
+      tft.canvas(0, 435, TFT_WIDTH, 35);
+      tft.set_background(COLOR_BACKGROUND);
+      tft.add_rectangle(10, 0, TFT_WIDTH - 20, 1, COLOR_WHITE);
+      tft_string.trim();
+      tft.add_text(tft_string.center(TFT_WIDTH), 5, COLOR_STATUS_MESSAGE, tft_string);
+    }
+
+  } // namespace
+
+  void MarlinUI::mesh_view_screen() {
+    mesh_leveling_screen(true);
+  }
+
+  void MarlinUI::draw_mesh_grid(const uint8_t x_pos, const uint8_t y_pos, const bed_mesh_t mesh, const bool probe_done) {
+    constexpr int16_t square_size = 15;
+
+    tft.canvas(MESH_GRID_OFFSET_X, MESH_GRID_OFFSET_Y, MESH_GRID_WIDTH, MESH_GRID_HEIGHT);
+    tft.set_background(COLOR_BACKGROUND);
+    tft.add_rectangle(0, 0, MESH_GRID_WIDTH, MESH_GRID_HEIGHT, COLOR_WHITE);
+
+    const int16_t x_pitch = MESH_GRID_WIDTH / (GRID_MAX_POINTS_X);
+    const int16_t y_pitch = (MESH_GRID_HEIGHT - 20) / (GRID_MAX_POINTS_Y);
+
+    for (uint16_t y = 0; y < GRID_MAX_POINTS_Y; ++y) {
+      const bool x_invert_order = ((y % 2) + (GRID_MAX_POINTS_Y % 2)) % 2 == 0;
+
+      for (uint16_t x = 0; x < GRID_MAX_POINTS_X; ++x) {
+        bool probed = y < y_pos
+          || (y == y_pos && ((x <= x_pos && !x_invert_order) || (x >= x_pos && x_invert_order)));
+
+        uint16_t color = COLOR_WHITE;
+
+        if (y == y_pos && x == x_pos) {
+          probed = probe_done;
+          color = COLOR_DARK_ORANGE;
+        }
+        if (probed) color = COLOR_YELLOW;
+
+        const float raw_z = mesh[x][y];
+        const bool has_value = !isnan(raw_z);
+
+        const int16_t rect_x = x_pitch / 2 + x_pitch * x - square_size / 2;
+        const int16_t rect_y = y_pitch / 2 + y_pitch * (GRID_MAX_POINTS_Y - y - 1) - square_size / 2;
+
+        tft.add_rectangle(rect_x, rect_y, square_size, square_size, color);
+        tft.add_rectangle(rect_x + 1, rect_y + 1, square_size - 2, square_size - 2, color);
+
+        if (probed && has_value) {
+          float z = raw_z;
+          if (z < 0) {
+            z = -z;
+            const int16_t bar_x = rect_x - square_size - 7;
+            tft.add_bar(bar_x > 0 ? bar_x : 0, rect_y + square_size + 17, 6, 3, color);
+          }
+
+          tft_string.set(ftostr12ns(z));
+          tft_string.trim();
+          const int16_t text_x = rect_x - square_size;
+          tft.add_text(text_x > 0 ? text_x : 0, rect_y + square_size + 3, color, tft_string);
+        }
+      }
+    }
+  }
+
+  #if ENABLED(AUTO_BED_LEVELING_BILINEAR)
+
+    void MarlinUI::g29_leveling_screen() {
+      mesh_leveling_screen(false);
+    }
+
+    void MarlinUI::g29_leveling_screen_complete(const bool success) {
+      tft.canvas(0, 435, TFT_WIDTH, 35);
+      tft.set_background(COLOR_BACKGROUND);
+      tft.add_rectangle(10, 0, TFT_WIDTH - 20, 1, COLOR_WHITE);
+
+      if (success) {
+        ui.go_back();
+      }
+      else {
+        add_control(TFT_WIDTH - 8 - 64 - 8, 385, BACK, imgBack);
+        tft_string.set(GET_TEXT_F(MSG_ERROR));
+        tft_string.trim();
+        tft.add_text(tft_string.center(TFT_WIDTH), 5, COLOR_STATUS_MESSAGE, tft_string);
+      }
+    }
+
+    #if ENABLED(PREHEAT_BEFORE_LEVELING)
+
+      void MarlinUI::g29_preheat_screen() {
+        ui.clear_lcd();
+        TERN_(TOUCH_SCREEN, touch.clear());
+        tft.canvas(0, 0, TFT_WIDTH, TFT_HEIGHT);
+        tft.set_background(COLOR_BACKGROUND);
+        tft_string.set(GET_TEXT_F(MSG_PREHEATING));
+        tft_string.trim();
+        tft.add_text(tft_string.center(TFT_WIDTH), TFT_HEIGHT / 2, COLOR_STATUS_MESSAGE, tft_string);
+      }
+
+    #endif
+  #endif
+
+#endif // HAS_MESH
 
 #if ENABLED(AUTO_BED_LEVELING_UBL)
 
