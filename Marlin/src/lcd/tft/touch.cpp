@@ -311,6 +311,7 @@ void Touch::touch(touch_control_t * const control) {
       case UBL: hold(control, UBL_REPEAT_DELAY); ui.encoderPosition += control->data; break;
     #endif
 
+    #if ENABLED(CASE_LIGHT_ENABLE)
     case CASE_LIGHT:
       if (caselight.on) {
         caselight.on = false;
@@ -319,6 +320,7 @@ void Touch::touch(touch_control_t * const control) {
       }
       caselight.update_enabled();
       break;
+    #endif
 
     case BED_Z:
       ui.clear_lcd();

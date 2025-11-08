@@ -256,10 +256,10 @@ void MarlinUI::draw_status_screen() {
   tft.add_rectangle(0, COORDINATES_H - 1, COORDINATES_W, 1, COLOR_AXIS_HOMED);
 
   // Speed display on the right
-  tft_string.set(ftostr5rj(planner.get_current_block()->nominal_speed));
-  tft_string.trim();
-  tft_string.add(" mm/s");
-  tft.add_text(COORDINATES_W - 20 - tft_string.width(), 3, COLOR_WHITE, tft_string);
+  // tft_string.set(ftostr5rj(planner.get_current_block()->nominal_speed));
+  // tft_string.trim();
+  // tft_string.add(" mm/s");
+  // tft.add_text(COORDINATES_W - 20 - tft_string.width(), 3, COLOR_WHITE, tft_string);
 
   // Z position on the left
   #if HAS_Z_AXIS

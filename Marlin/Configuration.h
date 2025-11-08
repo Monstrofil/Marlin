@@ -3579,11 +3579,19 @@
 
   #define TOUCH_SCREEN_CALIBRATION
 
+#if MOTHERBOARD == BOARD_MKS_ROBIN_NANO_V3
   #define TOUCH_CALIBRATION_X            11579
   #define TOUCH_CALIBRATION_Y            17253
   #define TOUCH_OFFSET_X                   -24
   #define TOUCH_OFFSET_Y                   -42
   #define TOUCH_ORIENTATION     TOUCH_PORTRAIT
+#else
+  #define TOUCH_CALIBRATION_X 20243
+  #define TOUCH_CALIBRATION_Y 30942
+  #define TOUCH_OFFSET_X        5
+  #define TOUCH_OFFSET_Y        4
+  #define TOUCH_ORIENTATION TOUCH_LANDSCAPE
+#endif
 
   #if ALL(TOUCH_SCREEN_CALIBRATION, EEPROM_SETTINGS)
     #define TOUCH_CALIBRATION_AUTO_SAVE // Auto save successful calibration values to EEPROM

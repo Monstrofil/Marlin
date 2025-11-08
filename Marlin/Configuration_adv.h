@@ -656,7 +656,9 @@
  *   PWM on pin OC2A. Only use this option if you don't need PWM on 0C2A. (Check your schematic.)
  *   USE_OCR2A_AS_TOP sacrifices duty cycle control resolution to achieve this broader range of frequencies.
  */
+#if MOTHERBOARD == MKS_ROBIN_NANO_V3
 #define FAST_PWM_FAN    // Increase the fan PWM frequency. Removes the PWM noise but increases heating in the FET/Arduino
+#endif
 #if ENABLED(FAST_PWM_FAN)
   #define FAST_PWM_FAN_FREQUENCY 125  // Define here to override the defaults below
   //#define USE_OCR2A_AS_TOP
@@ -760,7 +762,9 @@
  * @section caselight
  * M355 Case Light on-off / brightness
  */
+#if MOTHERBOARD == MKS_ROBIN_NANO_V3
 #define CASE_LIGHT_ENABLE
+#endif
 #if ENABLED(CASE_LIGHT_ENABLE)
   #define CASE_LIGHT_PIN PE6                  // Override the default pin if needed
   #define INVERT_CASE_LIGHT true             // Set true if Case Light is ON when pin is LOW
