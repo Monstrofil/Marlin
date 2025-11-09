@@ -201,14 +201,12 @@ void draw_heater_status(uint16_t x, uint16_t y, const int8_t heater) {
     tft_string.add(i16tostr3left(targetTemperature));
   }
 
-  tft_string.trim();
-
   const auto &icon = images[image];
 
   const uint16_t text_width = tft_string.width();
-  const uint16_t text_x = tft_string.center(TEMP_ICON_X + icon.width / 2);
+  const uint16_t text_x = TEMP_ICON_X + icon.width / 2 - text_width / 2;
   const uint16_t text_y = TEMP_ICON_Y + icon.height;
-  tft.add_text(text_x, text_y, color, tft_string, tft_string.width() + 10);
+  tft.add_text(text_x, text_y, color, tft_string);
 }
 
 void draw_fan_status(uint16_t x, uint16_t y, const bool blink) {
