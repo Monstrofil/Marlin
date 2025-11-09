@@ -330,15 +330,7 @@ QUICK_ACCESS_BEGIN(StatusQuickAccessIdle,
   QUICK_ACCESS_BUTTON_END();
 
   QUICK_ACCESS_BUTTON_BEGIN();
-    add_control(BTN_X, BTN_Y, BUTTON, imgSettings);
-  QUICK_ACCESS_BUTTON_END();
-
-  QUICK_ACCESS_BUTTON_BEGIN();
-    add_control(BTN_X, BTN_Y, BUTTON, imgSettings);
-  QUICK_ACCESS_BUTTON_END();
-
-  QUICK_ACCESS_BUTTON_BEGIN();
-    add_control(BTN_X, BTN_Y, BUTTON, imgSettings);
+    add_control(BTN_X, BTN_Y, ui.store_settings, imgSave);
   QUICK_ACCESS_BUTTON_END();
 
 QUICK_ACCESS_END(StatusQuickAccessIdle)
@@ -918,5 +910,22 @@ void MenuItem_confirm::draw_select_screen(FSTR_P const yes, FSTR_P const no, con
     #endif
   }
 #endif // AUTO_BED_LEVELING_UBL
+
+// #if ENABLED(EEPROM_SETTINGS)
+
+//     void MarlinUI::init_eeprom() {
+//       const bool good = settings.init_eeprom();
+//       completion_feedback(good);
+//       return_to_status();
+//     }
+//     void MarlinUI::load_settings() {
+//       const bool good = settings.load();
+//       completion_feedback(good);
+//     }
+//     void MarlinUI::store_settings() {
+//       const bool good = settings.save();
+//       completion_feedback(good);
+//     }
+// #endif
 
 #endif // TFT_COLOR_UI
