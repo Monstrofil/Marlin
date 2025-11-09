@@ -33,6 +33,7 @@ class QuickAccessButtonsBase {
   protected:
     static uint8_t page_index;
     static uint8_t page_count;
+    static uint8_t last_drawn_page;
 
     static constexpr uint8_t columns() { return Derived::grid_columns; }
     static constexpr uint8_t rows()    { return Derived::grid_rows; }
@@ -74,6 +75,7 @@ class QuickAccessButtonsBase {
     static void set_page_count(const uint8_t new_pages) {
       page_count = new_pages ? new_pages : 1;
       clamp_page();
+      last_drawn_page = 0xFF;
     }
 
     static uint8_t get_page_count() {
@@ -98,34 +100,44 @@ class QuickAccessButtonsBase {
 
     static void draw_indicator() {
       const uint8_t indicator_row = rows();
-      tft.canvas(0, row_to_y(indicator_row), TFT_WIDTH, FONT_LINE_HEIGHT);
-      tft.set_background(COLOR_RED);
-
-      uint16_t cursor_y = 0;
-
       const uint8_t total_pages = get_page_count();
-      if (total_pages > 1) {
+      const bool has_multiple_pages = total_pages > 1;
+
+      tft.canvas(0, row_to_y(indicator_row), TFT_WIDTH, FONT_LINE_HEIGHT);
+      tft.set_background(COLOR_BACKGROUND);
+
+      if (has_multiple_pages) {
         tft_string.set(ui8tostr2(page_index + 1));
         tft_string.add('/');
         tft_string.add(ui8tostr2(total_pages));
         tft_string.trim();
+        const uint16_t cursor_y = (FONT_LINE_HEIGHT > tft_string.font_height())
+          ? (FONT_LINE_HEIGHT - tft_string.font_height()) / 2
+          : 0;
         tft.add_text(
           tft_string.center(TFT_WIDTH),
           cursor_y,
           COLOR_LIGHT_BLUE,
           tft_string
         );
-        cursor_y += tft_string.font_height() + 2;
       }
     }
 
     template <typename... Args>
     static void draw_component(Args... args) {
       clamp_page();
-      clear_buttons_area();
+
+      const bool page_changed = page_index != last_drawn_page;
+      if (page_changed)
+        clear_buttons_area();
+
       Derived::draw_page(page_index, args...);
+
       draw_indicator();
+
       draw_nav();
+
+      last_drawn_page = page_index;
     }
 
     static void next_page_impl() {
@@ -153,11 +165,15 @@ class QuickAccessButtonsBase {
 
     static void next_page() { next_page_impl(); }
     static void prev_page() { prev_page_impl(); }
-    static void reset() { page_index = 0; }
+    static void reset() {
+      page_index = 0;
+      last_drawn_page = 0xFF;
+    }
 };
 
 template <typename Derived> uint8_t QuickAccessButtonsBase<Derived>::page_index = 0;
 template <typename Derived> uint8_t QuickAccessButtonsBase<Derived>::page_count = 1;
+template <typename Derived> uint8_t QuickAccessButtonsBase<Derived>::last_drawn_page = 0xFF;
 
 #define QUICK_ACCESS_BEGIN(NAME, ORIGIN_X, ORIGIN_Y, SPACING_X, SPACING_Y, GRID_COLS, GRID_ROWS, ...) \
   struct NAME : QuickAccessButtonsBase<NAME> { \
