@@ -1491,7 +1491,6 @@
  */
 #ifdef FB_G6_BLTOUCH
   #define BLTOUCH
-  #define SERVO0_PIN PA8
 #endif
 
 /**
