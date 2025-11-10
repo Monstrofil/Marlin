@@ -78,6 +78,7 @@ enum MarlinImage : uint8_t {
   imgStop,              // Stop_64x64x4
   imgPause,             // Pause_64x64x4
   imgFixedTimeMotion,   // Fixed_time_motion_64x64x4
+  imgAutobed,           // Autobed_64x64x16
   // Special values - must be at the end!
   imgCount,
   noImage = imgCount,
@@ -177,6 +178,7 @@ extern const tImage Power_64x64x4;
 extern const tImage Stop_64x64x4;
 extern const tImage Pause_64x64x4;
 extern const tImage Fixed_time_motion_64x64x4;
+extern const tImage Autobed_64x64x16;
 
 extern const tImage Slider8x16x4;
 

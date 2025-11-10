@@ -252,13 +252,13 @@ QUICK_ACCESS_BEGIN(
   QUICK_ACCESS_BUTTON_BEGIN();
     add_control(BTN_X, BTN_Y, FEEDRATE, imgFeedRate64);
   QUICK_ACCESS_BUTTON_END();
-  
-  QUICK_ACCESS_BUTTON_BEGIN();
-    add_control(BTN_X, BTN_Y, BED_Z, imgZoffset);
-  QUICK_ACCESS_BUTTON_END();
 
   QUICK_ACCESS_BUTTON_BEGIN();
     add_control(BTN_X, BTN_Y, FLOWRATE, imgFlowRate64);
+  QUICK_ACCESS_BUTTON_END();
+  
+  QUICK_ACCESS_BUTTON_BEGIN();
+    add_control(BTN_X, BTN_Y, BED_Z, imgZoffset);
   QUICK_ACCESS_BUTTON_END();
 
   QUICK_ACCESS_BUTTON_BEGIN();
@@ -288,10 +288,6 @@ QUICK_ACCESS_BEGIN(StatusQuickAccessIdle,
         cm && !pa, COLOR_CONTROL_ENABLED, cm && pa ? COLOR_BUSY : COLOR_CONTROL_DISABLED);
     QUICK_ACCESS_BUTTON_END();
   #endif
-  
-  QUICK_ACCESS_BUTTON_BEGIN();
-    add_control(BTN_X, BTN_Y, ui.mesh_view_screen, imgStop);
-  QUICK_ACCESS_BUTTON_END();
 
   #if ENABLED(CASE_LIGHT_ENABLE)
     QUICK_ACCESS_BUTTON_BEGIN();
@@ -303,16 +299,13 @@ QUICK_ACCESS_BEGIN(StatusQuickAccessIdle,
     add_control(BTN_X, BTN_Y, menu_main, imgSettings);
   QUICK_ACCESS_BUTTON_END();
 
+
   QUICK_ACCESS_BUTTON_BEGIN();
-    add_control(BTN_X, BTN_Y, FEEDRATE, imgFeedRate64);
+    add_control(BTN_X, BTN_Y, ui.mesh_view_screen, imgAutobed);
   QUICK_ACCESS_BUTTON_END();
 
   QUICK_ACCESS_BUTTON_BEGIN();
     add_control(BTN_X, BTN_Y, MENU_SCREEN, (intptr_t)ui.move_axis_screen, imgMove);
-  QUICK_ACCESS_BUTTON_END();
-
-  QUICK_ACCESS_BUTTON_BEGIN();
-    add_control(BTN_X, BTN_Y, FLOWRATE, imgFlowRate64);
   QUICK_ACCESS_BUTTON_END();
 
   QUICK_ACCESS_BUTTON_BEGIN();
@@ -321,6 +314,14 @@ QUICK_ACCESS_BEGIN(StatusQuickAccessIdle,
 
   QUICK_ACCESS_BUTTON_BEGIN();
     add_control(BTN_X, BTN_Y, _lcd_bed_tramming, imgTramming);
+  QUICK_ACCESS_BUTTON_END();
+
+  QUICK_ACCESS_BUTTON_BEGIN();
+    add_control(BTN_X, BTN_Y, FEEDRATE, imgFeedRate64);
+  QUICK_ACCESS_BUTTON_END();
+
+  QUICK_ACCESS_BUTTON_BEGIN();
+    add_control(BTN_X, BTN_Y, FLOWRATE, imgFlowRate64);
   QUICK_ACCESS_BUTTON_END();
 
   QUICK_ACCESS_BUTTON_BEGIN();

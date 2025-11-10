@@ -78,6 +78,7 @@ const tImage images[imgCount] = {
   Stop_64x64x4,                                   // imgStop
   Pause_64x64x4,                                  // imgPause
   Fixed_time_motion_64x64x4,                      // imgFixedTimeMotion
+  Autobed_64x64x16,                               // imgAutobed
 };
 
 #endif // HAS_GRAPHICAL_TFT
