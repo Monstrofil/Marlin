@@ -51,11 +51,8 @@ class QuickAccessButtonsBase {
       return row_to_y((index % buttons_per_page()) / columns());
     }
 
-    static constexpr uint8_t button_rows() {
-      return rows();
-    }
     static constexpr uint8_t buttons_per_page() {
-      return button_rows() * columns();
+      return rows() * columns();
     }
 
     static void clear_buttons_area() {
@@ -123,23 +120,6 @@ class QuickAccessButtonsBase {
       }
     }
 
-    template <typename... Args>
-    static void draw_component(Args... args) {
-      clamp_page();
-
-      const bool page_changed = page_index != last_drawn_page;
-      if (page_changed)
-        clear_buttons_area();
-
-      Derived::draw_page(page_index, args...);
-
-      draw_indicator();
-
-      draw_nav();
-
-      last_drawn_page = page_index;
-    }
-
     static void next_page_impl() {
       const uint8_t total_pages = get_page_count();
       if (total_pages <= 1) return;
@@ -160,7 +140,18 @@ class QuickAccessButtonsBase {
   public:
     template <typename... Args>
     static void draw(Args... args) {
-      draw_component(args...);
+      clamp_page();
+
+      const bool page_changed = page_index != last_drawn_page;
+      if (page_changed)
+        clear_buttons_area();
+
+      Derived::draw_page(page_index, args...);
+
+      draw_indicator();
+      draw_nav();
+
+      last_drawn_page = page_index;
     }
 
     static void next_page() { next_page_impl(); }
